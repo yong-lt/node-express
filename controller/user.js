@@ -78,13 +78,13 @@ exports.info = async (req, res, next) => {
     try {
         // console.log(req._user);
         const user = await User.findAll({
-            attributes: ["id", "username", "createdAt", "updatedAt", "auth", "authname"],
             where: { id: +req.query.id },
         });
+        const userinfo = user[0];
         if (user.length > 0) {
             res.send({
                 code: 200,
-                data: user[0],
+                data: { ...userinfo, password: "" },
                 msg: "用户信息获取成功",
             });
         } else {
