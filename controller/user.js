@@ -80,11 +80,12 @@ exports.info = async (req, res, next) => {
         const user = await User.findAll({
             where: { id: +req.query.id },
         });
-        const userinfo = user[0];
+        const userinfo = user[0].dataValues;
+        delete userinfo.password;
         if (user.length > 0) {
             res.send({
                 code: 200,
-                data: { ...userinfo, password: "" },
+                data: userinfo,
                 msg: "用户信息获取成功",
             });
         } else {
