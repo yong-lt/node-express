@@ -41,8 +41,8 @@ exports.login = async (req, res, next) => {
         next(error);
     }
 };
-// 用户注册
-exports.modify = async (req, res, next) => {
+// 用户添加
+exports.add = async (req, res, next) => {
     try {
         const users = await User.findAll({ where: { username: req.body.username } });
 
@@ -73,12 +73,34 @@ exports.modify = async (req, res, next) => {
         next(error);
     }
 };
+
+// 信息修改
+exports.modify = async (req, res, next) => {
+    try {
+        const { nickname, password } = req.body;
+        const user = await User.update({ nickname, password }, { where: { id: +req._user.id } });
+        if (user.length > 0) {
+            res.send({
+                code: 200,
+                msg: "信息修改成功",
+            });
+        } else {
+            res.send({
+                code: 200,
+                data: {},
+                msg: "信息修改失败",
+            });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
 // 用户信息
 exports.info = async (req, res, next) => {
     try {
-        // console.log(req._user);
         const user = await User.findAll({
-            where: { id: +req.query.id },
+            where: { id: +req._user.id },
         });
         const userinfo = user[0].dataValues;
         delete userinfo.password;

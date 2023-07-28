@@ -1,3 +1,7 @@
+/**
+ * 文件上传模块，暂时只有上传头像。后续封装该模块
+ */
+
 const path = require("path");
 const { formidable } = require("formidable");
 const getIpAdress = require("../utils/ip");
