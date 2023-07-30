@@ -3,23 +3,25 @@ const { generaGroup } = require("../utils/genera");
 
 exports.list = async (req, res, next) => {
     try {
-        const group = await Group.findAll({
-            attributes: ["id", "name", "createdAt", "updatedAt", "parent_id"],
+        let resultGroup = [];
+        let group = [];
+
+        group = await Group.findAll({
+            attributes: ["id", "name", "parent_id"],
             where: { is_delete: 1 },
         });
-        if (req.query.h === "true") {
-            res.send({
-                code: 200,
-                data: group,
-                msg: "角色获取成功",
-            });
+
+        // 是否直接获取所有数据，不包装
+        if (req.query.isAll == 1) {
+            resultGroup = group;
+        } else {
+            generaGroup(resultGroup, group, 0);
         }
-        const resultGroup = [];
-        generaGroup(resultGroup, group, 0);
+
         res.send({
             code: 200,
             data: resultGroup,
-            msg: "角色获取成功",
+            msg: "获取成功",
         });
     } catch (error) {
         next(error);
@@ -28,20 +30,24 @@ exports.list = async (req, res, next) => {
 
 exports.modify = async (req, res, next) => {
     try {
-        if (req.body.id) {
-            await Group.update(req.body, { where: { id: req.body.id } });
-            res.send({
-                code: 200,
-                msg: "角色修改成功",
-            });
-        } else {
-            const group = await Group.create({ ...req.body, is_delete: 1 });
-            res.send({
-                code: 200,
-                data: group,
-                msg: "角色添加成功",
-            });
-        }
+        await Group.update(req.body, { where: { id: +req.body.id } });
+        res.send({
+            code: 200,
+            msg: "角色修改成功",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.add = async (req, res, next) => {
+    try {
+        const group = await Group.create({ ...req.body, is_delete: 1 });
+        res.send({
+            code: 200,
+            data: group,
+            msg: "角色添加成功",
+        });
     } catch (error) {
         next(error);
     }

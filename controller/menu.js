@@ -1,16 +1,50 @@
 // const db = require("../model/index");
 
+const Group = require("../model/group");
 const Menu = require("../model/menu");
+const User = require("../model/user");
 const { generaMenu } = require("../utils/genera");
 
 exports.list = async (req, res, next) => {
     try {
-        const menus = await Menu.findAll({
-            order: [["sort", "ASC"]],
-            where: { is_delete: 1 },
-        });
-        const resultMenus = [];
-        generaMenu(resultMenus, menus, 0);
+        let resultMenus = [];
+        // 是否直接获取所有为 0 的顶级菜单
+        if (req.query.parent_id) {
+            resultMenus = await Menu.findAll({
+                order: [["sort", "ASC"]],
+                where: { is_delete: 1, parent_id: +req.query.parent_id },
+            });
+        } else if (req.query.isSystem == 1) {
+            const menus = await Menu.findAll({
+                order: [["sort", "ASC"]],
+                where: { is_delete: 1 },
+            });
+            generaMenu(resultMenus, menus, 0);
+        } else {
+            const _id = req._user.id;
+            const user = await User.findAll({
+                attributes: ["auth"],
+                where: {
+                    id: _id,
+                },
+            });
+
+            const menu = await Group.findAll({
+                attributes: ["menu"],
+                where: {
+                    id: user[0].auth,
+                    is_delete: 1,
+                },
+            });
+
+            const menuIds = menu[0].menu.split(",").map(item => +item);
+            const menus = await Menu.findAll({
+                order: [["sort", "ASC"]],
+                where: { is_delete: 1, id: menuIds },
+            });
+            generaMenu(resultMenus, menus, 0);
+        }
+
         res.send({
             code: 200,
             data: resultMenus,
@@ -23,20 +57,24 @@ exports.list = async (req, res, next) => {
 
 exports.modify = async (req, res, next) => {
     try {
-        if (req.body.id) {
-            await Menu.update(req.body, { where: { id: req.body.id } });
-            res.send({
-                code: 200,
-                msg: "菜单修改成功",
-            });
-        } else {
-            const menu = await Menu.create({ ...req.body, is_delete: 1 });
-            res.send({
-                code: 200,
-                data: menu,
-                msg: "菜单添加成功",
-            });
-        }
+        await Menu.update(req.body, { where: { id: +req.body.id } });
+        res.send({
+            code: 200,
+            msg: "菜单修改成功",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.add = async (req, res, next) => {
+    try {
+        const menu = await Menu.create({ ...req.body, is_delete: 1 });
+        res.send({
+            code: 200,
+            data: menu,
+            msg: "菜单添加成功",
+        });
     } catch (error) {
         next(error);
     }

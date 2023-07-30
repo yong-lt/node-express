@@ -3,6 +3,7 @@ const md5 = require("../utils/md5");
 const User = require("../model/user");
 const { sign } = require("jsonwebtoken");
 const { jwtStr } = require("../config/config.default");
+const Group = require("../model/group");
 
 // 用户登录
 exports.login = async (req, res, next) => {
@@ -53,7 +54,14 @@ exports.add = async (req, res, next) => {
                 msg: "用户名已存在！",
             });
         } else {
-            const user = await User.create(req.body);
+            const group = await Group.findAll({
+                attributes: ["id", "name"],
+                where: { is_delete: 1 },
+            });
+            const obj = { ...req.body };
+            console.log(group.find(item => item.id == req.body.auth));
+            obj["auth_name"] = group.find(item => item.id == req.body.auth).dataValues.name;
+            const user = await User.create(obj);
 
             if (user.id) {
                 res.send({
@@ -78,7 +86,7 @@ exports.add = async (req, res, next) => {
 exports.modify = async (req, res, next) => {
     try {
         const { nickname, password } = req.body;
-        const user = await User.update({ nickname, password }, { where: { id: +req._user.id } });
+        const user = await User.update({ nickname, password }, { where: { id: +req.body.id } });
         if (user.length > 0) {
             res.send({
                 code: 200,
@@ -125,11 +133,23 @@ exports.info = async (req, res, next) => {
 // 用户列表
 exports.list = async (req, res, next) => {
     try {
-        const users = await User.findAll({ attributes: ["id", "username", "createdAt", "updatedAt", "auth", "authname"] });
+        const users = await User.findAll({ attributes: ["id", "username", "nickname", "create_time", "update_time", "auth", "auth_name"] });
         res.send({
             code: 200,
             data: users,
             msg: "",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.delete = async (req, res, next) => {
+    try {
+        await User.destroy({ where: { id: req.body.ids } });
+        res.send({
+            code: 200,
+            msg: "用户删除成功",
         });
     } catch (error) {
         next(error);

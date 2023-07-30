@@ -2,11 +2,9 @@ const generaMenu = (resultMenu, router, parent_id) => {
     router.forEach(item => {
         if (item.parent_id === parent_id) {
             const menu = {
-                path: item.path,
-                name: item.name,
+                path: item.component,
                 component: item.component,
                 type: item.type,
-                name: item.name,
                 sort: item.sort,
                 parent_id: item.parent_id,
                 id: item.id,

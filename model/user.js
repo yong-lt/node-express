@@ -26,6 +26,14 @@ const User = sequelize.define(
         last_login_time: {
             type: DataTypes.STRING,
         },
+        auth: {
+            type: DataTypes.NUMBER,
+            allowNull: false,
+        },
+        auth_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     },
     {
         freezeTableName: true,

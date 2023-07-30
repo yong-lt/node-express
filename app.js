@@ -8,11 +8,15 @@ const requestArg = require("./middleware/requestArg");
 const notFound = require("./middleware/404");
 const auth = require("./middleware/auth");
 
+const md5 = require("./utils/md5");
+
 const { connectDB } = require("./model/index");
 connectDB();
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+
+console.log(md5("admin"));
 
 app.use(morgan("dev"));
 app.use(express.json());

@@ -4,8 +4,9 @@ const validatorer = require("../middleware/validatorer");
 const Group = validatorer(
     joi.object({
         id: joi.number(),
-        createdAt: joi.any(),
-        updatedAt: joi.any(),
+        is_delete: joi.number().required(),
+        create_time: joi.any(),
+        update_time: joi.any(),
         name: joi.string().min(5).max(10).required().messages({
             "string.empty": "角色名称必填！",
             "string.max": "角色名称不能超过10个长度",
@@ -17,7 +18,6 @@ const Group = validatorer(
         parent_id: joi.number().required().messages({
             "string.empty": "上级角色必填！",
         }),
-        is_delete: joi.number().min(1).max(1).unsafe(),
     })
 );
 
