@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-console.log(md5("admin"));
+// console.log(md5(""));
 
 app.use(morgan("dev"));
 app.use(express.json());

@@ -58,10 +58,12 @@ exports.add = async (req, res, next) => {
                 attributes: ["id", "name"],
                 where: { is_delete: 1 },
             });
-            const obj = { ...req.body };
-            console.log(group.find(item => item.id == req.body.auth));
-            obj["auth_name"] = group.find(item => item.id == req.body.auth).dataValues.name;
-            const user = await User.create(obj);
+
+            const _user = { ...req.body };
+
+            _user["auth_name"] = group.find(item => item.id == req.body.auth).dataValues.name;
+            _user["password"] = req.body.password ? req.body.password : "a123456";
+            const user = await User.create(_user);
 
             if (user.id) {
                 res.send({
