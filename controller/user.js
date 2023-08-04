@@ -124,7 +124,7 @@ exports.info = async (req, res, next) => {
             res.send({
                 code: 200,
                 data: {},
-                msg: "用户信息获取失败",
+                msg: "未查到该用户",
             });
         }
     } catch (error) {
