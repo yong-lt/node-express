@@ -47,13 +47,15 @@ const Add = validatorer(
             "string.max": "密码不能超过10个长度",
             "string.min": "密码长度至少有5个长度",
         }),
-        auth: joi.number().required().messages({
-            "number.empty": "用户权限必填",
-        }),
+        auth: joi.number().required(),
     })
 );
 
-const Delete = validatorer(joi.array().items(joi.number().required()));
+const Delete = validatorer(
+    joi.object({
+        ids: joi.array().items(joi.number().required()),
+    })
+);
 
 module.exports = {
     Modify,

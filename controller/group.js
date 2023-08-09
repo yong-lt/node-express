@@ -4,19 +4,49 @@ const { generaGroup } = require("../utils/genera");
 exports.list = async (req, res, next) => {
     try {
         let resultGroup = [];
-        let group = [];
 
-        group = await Group.findAll({
+        const group = await Group.findAll({
             attributes: ["id", "name", "parent_id"],
             where: { is_delete: 1 },
         });
 
-        // 是否直接获取所有数据，不包装
-        if (req.query.isAll == 1) {
-            resultGroup = group;
-        } else {
-            generaGroup(resultGroup, group, 0);
-        }
+        generaGroup(resultGroup, group, 0);
+
+        res.send({
+            code: 200,
+            data: resultGroup,
+            msg: "获取成功",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.formatListName = async (req, res, next) => {
+    try {
+        let resultGroup = [];
+        const group = await Group.findAll({
+            attributes: ["id", "name", "parent_id"],
+            order: [["parent_id", "ASC"]],
+            where: { is_delete: 1 },
+        });
+
+        resultGroup = group.map((item, index) => {
+            if (index == 0) {
+                return item;
+            }
+
+            const copy = { ...item.dataValues };
+
+            let str = "   ";
+            for (let i = 0; i < index; i++) {
+                str += str;
+            }
+
+            copy["name"] = str + "∟" + item.name;
+
+            return copy;
+        });
 
         res.send({
             code: 200,

@@ -19,7 +19,7 @@ exports.login = async (req, res, next) => {
         if (user.length) {
             const { id, username, create_time, update_time, avatar_url, last_login_time, nickname } = user[0].dataValues;
             // 生成token
-            const token = await sign({ id, username }, jwtStr, { expiresIn: 60 * 60 * 2 });
+            const token = await sign({ id, username }, jwtStr, { expiresIn: 60 * 60 * 48 });
 
             // 更新最后登录时间
             const _last_login_time = new Date().toLocaleString().replace(/\//g, "-");
