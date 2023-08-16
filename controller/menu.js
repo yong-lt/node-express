@@ -21,6 +21,7 @@ exports.list = async (req, res, next) => {
             });
             generaMenu(resultMenus, menus, 0);
         } else {
+            // 用户权限菜单
             const _id = req._user.id;
             const user = await User.findAll({
                 attributes: ["auth"],
@@ -69,7 +70,7 @@ exports.modify = async (req, res, next) => {
 
 exports.add = async (req, res, next) => {
     try {
-        const menu = await Menu.create({ ...req.body, is_delete: 1 });
+        const menu = await Menu.create({ ...req.body, parent_id: req.body.parent_id ? req.body.parent_id : 0, is_delete: 1 });
         res.send({
             code: 200,
             data: menu,
@@ -103,7 +104,6 @@ exports.info = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
     try {
-        console.log(req.body.ids);
         await Menu.update({ is_delete: 0 }, { where: { id: req.body.ids } });
         res.send({
             code: 200,

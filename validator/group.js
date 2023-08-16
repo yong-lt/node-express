@@ -20,7 +20,7 @@ const Add = validatorer(
             "string.max": "角色名称不能超过10个长度",
             "string.min": "角色名称长度至少有5个长度",
         }),
-        parent_id: joi.number().required(),
+        parent_id: joi.number(),
     })
 );
 

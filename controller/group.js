@@ -22,6 +22,7 @@ exports.list = async (req, res, next) => {
     }
 };
 
+// 格式化，前端显示缩进
 exports.formatListName = async (req, res, next) => {
     try {
         let resultGroup = [];
@@ -72,7 +73,7 @@ exports.modify = async (req, res, next) => {
 
 exports.add = async (req, res, next) => {
     try {
-        const group = await Group.create({ ...req.body, is_delete: 1 });
+        const group = await Group.create({ ...req.body, parent_id: req.body.parent_id ? req.body.parent_id : 0, is_delete: 1 });
         res.send({
             code: 200,
             data: group,
