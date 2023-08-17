@@ -5,6 +5,7 @@ const menuCtrl = require("../controller/menu");
 const menuValidator = require("../validator/menu");
 
 router.get("/list", menuCtrl.list);
+router.get("/auth.menu", menuCtrl.authMenu);
 router.post("/modify", menuValidator.Modify, menuCtrl.modify);
 router.post("/add", menuValidator.Add, menuCtrl.add);
 router.post("/delete", menuValidator.Delete, menuCtrl.delete);

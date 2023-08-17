@@ -9,42 +9,100 @@ exports.list = async (req, res, next) => {
     try {
         let resultMenus = [];
         // 是否直接获取所有为 0 的顶级菜单
-        if (req.query.parent_id) {
-            resultMenus = await Menu.findAll({
-                order: [["sort", "ASC"]],
-                where: { is_delete: 1, parent_id: +req.query.parent_id },
-            });
-        } else if (req.query.isSystem == 1) {
-            const menus = await Menu.findAll({
-                order: [["sort", "ASC"]],
-                where: { is_delete: 1 },
-            });
-            generaMenu(resultMenus, menus, 0);
-        } else {
-            // 用户权限菜单
-            const _id = req._user.id;
-            const user = await User.findAll({
-                attributes: ["auth"],
-                where: {
-                    id: _id,
-                },
-            });
+        // if (req.query.parent_id) {
+        //     resultMenus = await Menu.findAll({
+        //         order: [["sort", "ASC"]],
+        //         where: { is_delete: 1, parent_id: +req.query.parent_id },
+        //     });
+        // } else if (req.query.isSystem == 1) {
+        //     const menus = await Menu.findAll({
+        //         order: [["sort", "ASC"]],
+        //         where: { is_delete: 1 },
+        //     });
+        //     generaMenu(resultMenus, menus, 0);
+        // }
 
-            const menu = await Group.findAll({
-                attributes: ["menu"],
-                where: {
-                    id: user[0].auth,
-                    is_delete: 1,
-                },
-            });
+        const menus = await Menu.findAll({
+            order: [["sort", "ASC"]],
+            where: { is_delete: 1 },
+        });
+        generaMenu(resultMenus, menus, 0);
 
-            const menuIds = menu[0].menu.split(",").map(item => +item);
-            const menus = await Menu.findAll({
-                order: [["sort", "ASC"]],
-                where: { is_delete: 1, id: menuIds },
-            });
-            generaMenu(resultMenus, menus, 0);
-        }
+        res.send({
+            code: 200,
+            data: resultMenus,
+            msg: "菜单获取成功",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// 格式化，前端显示缩进
+exports.formatListName = async (req, res, next) => {
+    try {
+        let resultGroup = [];
+        const group = await Group.findAll({
+            attributes: ["id", "name", "parent_id"],
+            order: [["parent_id", "ASC"]],
+            where: { is_delete: 1 },
+        });
+
+        resultGroup = group.map((item, index) => {
+            if (index == 0) {
+                return item;
+            }
+
+            const copy = { ...item.dataValues };
+
+            let str = "   ";
+            for (let i = 0; i < index; i++) {
+                str += str;
+            }
+
+            copy["name"] = str + "∟" + item.name;
+
+            return copy;
+        });
+
+        res.send({
+            code: 200,
+            data: resultGroup,
+            msg: "获取成功",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// 用户权限菜单
+exports.authMenu = async (req, res, next) => {
+    try {
+        let resultMenus = [];
+
+        const _id = req._user.id;
+        const user = await User.findAll({
+            attributes: ["auth"],
+            where: {
+                id: _id,
+            },
+        });
+
+        const menu = await Group.findAll({
+            attributes: ["menu"],
+            where: {
+                id: user[0].auth,
+                is_delete: 1,
+            },
+        });
+
+        const menuIds = menu[0].menu.split(",").map(item => +item);
+
+        const menus = await Menu.findAll({
+            order: [["sort", "ASC"]],
+            where: { is_delete: 1, id: menuIds },
+        });
+        generaMenu(resultMenus, menus, 0);
 
         res.send({
             code: 200,
