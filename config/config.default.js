@@ -11,5 +11,5 @@ module.exports = {
     },
     md5Str: "fjadiofuh4hdfhuihwedhq9hdsdasjndqwhdqw9dhfwi3290vmacnaaspm!ojfodiosajvdvkndf.;f.ss",
     jwtStr: "fwefh7hfhwerfh23ur9823y44fgthkiui,liol.o;p[luykjefesdfscasda",
-    notAuth: ["/api/users/login", "/api/users/register"],
+    notAuth: ["/api/users/login"],
 };

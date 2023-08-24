@@ -4,7 +4,7 @@ const { generaGroup } = require("../utils/genera");
 exports.list = async (req, res, next) => {
     try {
         let resultGroup = [];
-        const group = [];
+        let group = [];
         switch (req.query.isTree) {
             case "1":
                 group = await Group.findAll({
