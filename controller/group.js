@@ -6,6 +6,7 @@ exports.list = async (req, res, next) => {
         let resultGroup = [];
         let group = [];
         switch (req.query.isTree) {
+            // 格式化名称，显示缩进关系
             case "1":
                 group = await Group.findAll({
                     attributes: ["id", "name", "parent_id"],
@@ -73,10 +74,10 @@ exports.modify = async (req, res, next) => {
 
 exports.add = async (req, res, next) => {
     try {
-        const group = await Group.create({ ...req.body, parent_id: req.body.parent_id ? req.body.parent_id : 0, is_delete: 1 });
+        await Group.create({ ...req.body, parent_id: req.body.parent_id ? req.body.parent_id : 0, is_delete: 1 });
         res.send({
             code: 200,
-            data: group,
+            data: {},
             msg: "角色添加成功",
         });
     } catch (error) {

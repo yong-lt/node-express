@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-// console.log(md5(""));
+// console.log(md5("a111111"));
 
 app.use(morgan("dev"));
 app.use(express.json());
